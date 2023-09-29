@@ -1,130 +1,97 @@
-import React, { useState, useEffect } from 'react';
+// layout.js
+import React from 'react';
+import { safeCredentials, handleErrors } from './utils/fetchHelper';
 
-import './layout.scss';
+// Importing stylesheet
+import './home.scss';
 
-
-class Layout extends React.Component {
+class Layout extends React.Component  {
   constructor(props) {
     super(props)
     this.state = {
-      navbarOpen: false,
-      scrolled: false,
-      scrollPosition: window.scrollY,
+      authenticated: false,
+      username: '',
     }
   }
 
-  componentDidMount = () => {
-    console.log(this.state.scrollPosition);
-    console.log(window.scrollY);
-
-    this.setState({
-      scrollPosition: window.scrollY,
-    })
-    
-    document.addEventListener('scroll', this.toggleScrollDown);
-  }
-
-  toggleNavbarOpen = () => {
-    this.setState({
-      navbarOpen: !this.state.navbarOpen,
-    })
-  }
-
-  toggleScrollDown = () => {
-    if (window.scrollY > 0) {
-      this.setState({
-        scrolled: true,
-        scrollPosition: window.scrollY,
-      });
-    } else if (window.scrollY === 0){
-      this.setState({
-        scrolled: false,
-        scrollPosition: window.scrollY,
+  componentDidMount() {
+    fetch('/api/authenticated')
+      .then(handleErrors)
+      .then(data => {
+        // console.log(data)
+        this.setState({
+          authenticated: data.authenticated,
+          username: data.username,
+        })
       })
-    } else {
-      console.log("failed");
-    }
+  }
+
+  logout = (e) => {
+    e.preventDefault();
+
+    fetch('/api/sessions', safeCredentials({
+      method: 'DELETE',
+    }))
+      .then(handleErrors)
+      .then(data => {
+        //console.log('data', data)
+        if (data.success) {
+          this.setState({
+            authenticated: false,
+          })
+          const params = new URLSearchParams(window.location.search);
+          const redirect_url = params.get('redirect_url') || '/';
+          window.location = redirect_url;
+        }
+      })
+      .catch(error => {
+        this.setState({
+          error: 'Could not sign out.',
+        })
+      })
   }
 
   render () {
-    const { navbarOpen, scrolled } = this.state;
-    
+    const { authenticated, username } = this.state;
+
     return (
       <React.Fragment>
-        <nav className={`${(scrolled && "scrolled-down shadow-lg") || (!scrolled && "navbar")} navbar-expand-md sticky-top `}>
-          <div className="navbar container-fluid d-none d-md-flex row">
-              <div className="d-flex justify-content-between">
-              <a className="d-md-flex navbar-brand text-black fontPrimary col-4" href="/">COLLIN<strong>DAPPER</strong></a>
-                <ul className="d-flex navbar-nav col-6 justify-content-center">
-                  <li className="nav-item fontNavigation mx-auto">
-                    <a className="nav-link text-black" href='/'>Home</a>
-                  </li>
-                  <li className="nav-item fontNavigation mx-auto">
-                    <a className="nav-link text-black" href='/about'>Experience</a>
-                  </li>
-                  <li className="nav-item fontNavigation mx-auto">
-                    <a className="nav-link text-black" href='/projects'>Projects</a>
-                  </li>
-                  <li className="nav-item fontNavigation mx-auto">
-                    <a className="nav-link text-black" href='/skills'>Certifications</a>
-                  </li>
-                  <li className="nav-item fontNavigation mx-auto">
-                    <a className="nav-link text-black" href='/cyber'>Cyber</a>
-                  </li>
-                </ul>
-              </div>
-          </div>
+          {(authenticated)
 
-        <div className="container d-flex d-md-none sticky-top justify-content-between">
-          <a className="d-md-none d-flex navbar-brand text-black fontPrimary my-auto" href="/">COLLIN<strong>DAPPER</strong></a>
-            <button className="d-md-none hamburger-toggle" onClick={this.toggleNavbarOpen}>
-              <span className={`hamburger hamburger-icon ${navbarOpen && "is-open"}`}></span>
-            </button>
-          </div>
+            ? <nav className="navbar navbar-expand d-flex px-md-5 px-2" id="navbar">
+                <a className="navbar-brand text-success" href="/">
+                  <b className="d-md-inline d-none">Budget Buddy</b>
+                </a>
+                <button type="submit" className="btn btn-outline-success btn-logout" onClick={this.logout}>Log out @{username}</button>
+              </nav>
 
-            {navbarOpen ?
-              <div className="d-flex row me-auto ms-5">
-                <ul className="navbar-nav me-auto mb-2">
-                  <li className="nav-item fontNavigation text-start">
-                    <a className="nav-link text-black fontNavigation" href="/">Home</a>
-                  </li>
-                  <li className="nav-item fontNavigation text-start">
-                    <a className="nav-link text-black fontNavigation" href="/about">Experience</a>
-                  </li>
-                  <li className="nav-item fontNavigation text-start">
-                    <a className="nav-link text-black fontNavigation" href="/projects">Projects</a>
-                  </li>
-                  <li className="nav-item fontNavigation text-start">
-                    <a className="nav-link text-black fontNavigation" href="/skills">Certifications</a>
-                  </li>
-                  <li className="nav-item fontNavigation text-start">
-                    <a className="nav-link text-black fontNavigation" href="/cyber">Cyber</a>
-                  </li>
-                </ul>
-              </div>
-              :
-              null
-            }
-        </nav>
-        
-
-        <div id="mainContent" className="mainContent mb-3">
+            : <nav className="navbar navbar-expand d-flex justify-content-between px-md-5 px-2" id="navbar">
+                <a className="navbar-brand text-success" href="/">
+                  
+                  <b className="pl-2" >Budget Buddy</b>
+                </a>
+                <a className="btn btn-outline-success btn-login" href="/login">Log in</a>
+              </nav>
+          }
+        <div className="content">
           {this.props.children}
         </div>
-
+        
         {/* Footer */}
-        <footer className="sticky-bottom mt-5">
-          <div className="container-fluid footer">
-            <div className="d-flex row">
-              <div className="col-6">
-                <p className="footerItem">&copy; Collin Dapper</p>
+        <footer>
+          <div className="container">
+            <div className="row no-gutters justify-content-between py-4 footerBar">
+              <div className="col-12 col-xl-auto order-2 order-xl-1">
+                  <div className="d-xl-flex text-left text-md-center">
+                    <span className="d-block">© 2023 Collin Dapper, Inc. All rights reserved</span>
+                  </div>
               </div>
               
             </div>
           </div>
         </footer>
       </React.Fragment>
-    )
+    );
   }
 }
 

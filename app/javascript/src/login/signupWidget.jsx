@@ -1,7 +1,7 @@
 // signupWidget.jsx
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { safeCredentials, handleErrors } from '@utils/fetchHelper';
+import { safeCredentials, handleErrors } from '../utils/fetchHelper';
 
 class SignupWidget extends React.Component {
   state = {
@@ -83,9 +83,12 @@ class SignupWidget extends React.Component {
       <React.Fragment>
         <form onSubmit={this.signup}>
           <input name="username" type="text" className="form-control form-control-lg mb-3" placeholder="Username" value={username} onChange={this.handleChange} required />
+
           <input name="email" type="text" className="form-control form-control-lg mb-3" placeholder="Email" value={email} onChange={this.handleChange} required />
+
           <input name="password" type="password" className="form-control form-control-lg mb-3" placeholder="Password" value={password} onChange={this.handleChange} required />
-          <button type="submit" className="btn btn-danger btn-block btn-lg">Sign up</button>
+
+          <button type="submit" className="btn btn-success btn-block btn-lg">Sign up</button>
         </form>
         <hr/>
         <p className="mb-0">Already have an account? <a className="text-primary" onClick={this.props.toggle}>Log in</a></p>

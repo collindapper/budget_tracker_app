@@ -16,7 +16,7 @@ class Home extends React.Component {
     return (
       <Layout>
         <div>
-          <h1>Weather App Testing</h1>
+          <h1>Budget Tracker App Testing</h1>
         </div>
       </Layout>
     )
