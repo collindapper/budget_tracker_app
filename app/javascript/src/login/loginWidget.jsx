@@ -55,11 +55,11 @@ class LoginWidget extends React.Component {
 
           <input name="password" type="password" className="form-control form-control-lg mb-3" placeholder="Password" value={password} onChange={this.handleChange} required />
 
-          <button type="submit" className="btn btn-success btn-block btn-lg">Log in</button>
+          <button type="submit" className="btn btn-success btn-lg w-100">Log in</button>
           {error && <p className="text-danger mt-2">{error}</p>}
         </form>
         <hr/>
-        <p className="mb-0">Don't have an account? <a className="text-primary" onClick={this.props.toggle}>Sign up</a></p>
+        <p className="mb-0">Don't have an account? <a className="text-primary btn pt-0" onClick={this.props.toggle}>Sign up</a></p>
       </React.Fragment>
     )
   }

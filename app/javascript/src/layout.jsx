@@ -3,7 +3,7 @@ import React from 'react';
 import { safeCredentials, handleErrors } from './utils/fetchHelper';
 
 // Importing stylesheet
-import './home.scss';
+import './layout.scss';
 
 class Layout extends React.Component  {
   constructor(props) {
@@ -11,6 +11,7 @@ class Layout extends React.Component  {
     this.state = {
       authenticated: false,
       username: '',
+      navbarOpen: false,
     }
   }
 
@@ -24,6 +25,12 @@ class Layout extends React.Component  {
           username: data.username,
         })
       })
+  }
+
+  toggleNavbarOpen = () => {
+    this.setState({
+      navbarOpen: !this.state.navbarOpen,
+    })
   }
 
   logout = (e) => {
@@ -52,44 +59,66 @@ class Layout extends React.Component  {
   }
 
   render () {
-    const { authenticated, username } = this.state;
+    const { authenticated, username, navbarOpen } = this.state;
 
     return (
       <React.Fragment>
-          {(authenticated)
+        <div className="d-flex content">
 
-            ? <nav className="navbar navbar-expand d-flex px-md-5 px-2" id="navbar">
-                <a className="navbar-brand text-success" href="/">
-                  <b className="d-md-inline d-none">Budget Buddy</b>
-                </a>
-                <button type="submit" className="btn btn-outline-success btn-logout" onClick={this.logout}>Log out @{username}</button>
-              </nav>
+            <nav className={`d-flex align-content-between navbar ${(navbarOpen && "col-4 col-sm-2") || (!navbarOpen && "col-2 col-sm-1")}`} id="navbar">
+                <div className="mx-auto w-100">
+                  <button className="hamburger-toggle mx-auto w-100" onClick={this.toggleNavbarOpen}>
+                    <span className={`hamburger hamburger-icon ${navbarOpen && "is-open"}`}></span>
+                  </button>
+                  <a href="/"><div className="logo w-100"></div></a>
+                </div>
 
-            : <nav className="navbar navbar-expand d-flex justify-content-between px-md-5 px-2" id="navbar">
-                <a className="navbar-brand text-success" href="/">
+                  {(navbarOpen)
+                    
+                  ? <div className="d-flex container">
+                      <a className="navbar-brand w-100 mx-auto text-center text-white my-2" href="/"><i className="fas fa-chart-line text-success me-2"></i>Overview</a>
+                      <a className="navbar-brand w-100 mx-auto text-center text-white my-2" href="/"><i className="fas fa-piggy-bank text-success me-2"></i>Savings</a>
+                      <a className="navbar-brand w-100 mx-auto text-center text-white my-2" href="/"><i className="fas fa-file-invoice-dollar text-success me-2"></i>Tracker</a>
+                      <a className="navbar-brand w-100 mx-auto text-center text-white my-2" href="/"><i className="fas fa-comments-dollar text-success me-2"></i>Notes</a>
+                    </div>
+
+                  : <div className="d-flex container">
+                      <a className="navbar-brand w-100 mx-auto text-center text-white my-2" href="/"><i className="fas fa-chart-line text-success me-2"></i></a>
+                      <a className="navbar-brand w-100 mx-auto text-center text-white my-2" href="/"><i className="fas fa-piggy-bank text-success me-2"></i></a>
+                      <a className="navbar-brand w-100 mx-auto text-center text-white my-2" href="/"><i className="fas fa-file-invoice-dollar text-success me-2"></i></a>
+                      <a className="navbar-brand w-100 mx-auto text-center text-white my-2" href="/"><i className="fas fa-comments-dollar text-success me-2"></i></a>
+                    </div>
                   
-                  <b className="pl-2" >Budget Buddy</b>
-                </a>
-                <a className="btn btn-outline-success btn-login" href="/login">Log in</a>
+                  }
+                   
+                  {(authenticated)
+                  
+                  ? <a className="btn btn-outline-success w-75 mx-4 btn-logout mx-auto" onClick={this.logout}><i className="fas fa-sign-out-alt"></i></a>
+                  : <a className="btn btn-outline-success w-75 mx-4 btn-login mx-auto" href="/login"><i className="fas fa-sign-in-alt"></i></a>
+                  }
+                
+                
               </nav>
-          }
-        <div className="content">
-          {this.props.children}
-        </div>
-        
-        {/* Footer */}
-        <footer>
-          <div className="container">
-            <div className="row no-gutters justify-content-between py-4 footerBar">
-              <div className="col-12 col-xl-auto order-2 order-xl-1">
-                  <div className="d-xl-flex text-left text-md-center">
-                    <span className="d-block">© 2023 Collin Dapper, Inc. All rights reserved</span>
-                  </div>
-              </div>
-              
-            </div>
+            
+
+          <div className="d-flex container col-9 col-sm-10 mainContent">
+            {this.props.children}
           </div>
-        </footer>
+        
+        {/*
+          <footer>
+            <div className="container">
+              <div className="row no-gutters justify-content-between py-4 footerBar">
+                <div className="col-12 col-xl-auto order-2 order-xl-1">
+                    <div className="d-xl-flex text-left text-md-center">
+                      <span className="d-block">© 2023 Collin Dapper, Inc. All rights reserved</span>
+                    </div>
+                </div>
+                
+              </div>
+            </div>
+          </footer>*/}
+        </div>
       </React.Fragment>
     );
   }

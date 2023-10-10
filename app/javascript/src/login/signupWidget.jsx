@@ -7,7 +7,7 @@ class SignupWidget extends React.Component {
   state = {
     email: '',
     password: '',
-    username: '',
+    confirmPassword: '',
     error: '',
   }
 
@@ -29,7 +29,6 @@ class SignupWidget extends React.Component {
         user: {
           email: this.state.email,
           password: this.state.password,
-          username: this.state.username,
         }
       })
     }))
@@ -40,7 +39,7 @@ class SignupWidget extends React.Component {
       })
       .catch(error => {
         this.setState({
-          error: 'Could not sign up.',
+          error: 'Could not sign up',
         })
         console.log('catch error');
       })
@@ -78,20 +77,24 @@ class SignupWidget extends React.Component {
 
 
   render () {
-    const { email, password, username, error } = this.state;
+    const { email, password, error } = this.state;
     return (
       <React.Fragment>
         <form onSubmit={this.signup}>
-          <input name="username" type="text" className="form-control form-control-lg mb-3" placeholder="Username" value={username} onChange={this.handleChange} required />
-
           <input name="email" type="text" className="form-control form-control-lg mb-3" placeholder="Email" value={email} onChange={this.handleChange} required />
-
           <input name="password" type="password" className="form-control form-control-lg mb-3" placeholder="Password" value={password} onChange={this.handleChange} required />
+          <div className="container">  
+            <p className="mb-0">Password requirements:</p>
+            <p className="mb-0">- Minimum of 8 characters.</p>
+            <p>- Must contain special characters. Ex. "!@#$%"</p>
+          </div>
+          
 
-          <button type="submit" className="btn btn-success btn-block btn-lg">Sign up</button>
+          <button type="submit" className="btn btn-success btn-lg w-100">Sign up</button>
+          {error && <p className="text-danger mt-2">{error}</p>}
         </form>
         <hr/>
-        <p className="mb-0">Already have an account? <a className="text-primary" onClick={this.props.toggle}>Log in</a></p>
+        <p className="mb-0">Already have an account? <a className="text-primary btn pt-0" onClick={this.props.toggle}>Log in</a></p>
       </React.Fragment>
     )
   }
